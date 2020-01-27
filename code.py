@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+# /usr/bin/env python3
 
-# Created by: ????
-# Created on: ???? 2019
-# This file is the "????" game
-#   for CircuitPython
+# Created by: Euel Yirga and austin
+# Created on: January 2019
+# This programs shows a sprite, makes a sound,
+# shoots a laser and shows an alien
 
 import ugame
 import stage
@@ -218,6 +218,9 @@ def game_scene():
     score = 0
 
     text = []
+    all_the_bricks = []
+    both_paddles = []
+    ball_sprite = []
 
     # an image bank for CircuitPython
     image_bank_2 = stage.Bank.from_bmp16("break_out.bmp")
@@ -234,45 +237,75 @@ def game_scene():
     sprites.insert(0, paddle2)  # insert at the top of sprite list
 
     brick1 = stage.Sprite(image_bank_2, 5, 90, 40)
-    sprites.insert(0, brick1)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick1)  # insert at the top of sprite list
 
     brick2 = stage.Sprite(image_bank_2, 6, 74, 40)
-    sprites.insert(0, brick2)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick2)  # insert at the top of sprite list
 
     brick3 = stage.Sprite(image_bank_2, 5, 58, 40)
-    sprites.insert(0, brick3)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick3)  # insert at the top of sprite list
 
     brick4 = stage.Sprite(image_bank_2, 6, 42, 40)
-    sprites.insert(0, brick4)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick4)  # insert at the top of sprite list
 
     brick5 = stage.Sprite(image_bank_2, 5, 26, 40)
-    sprites.insert(0, brick5)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick5)  # insert at the top of sprite list
 
     brick6 = stage.Sprite(image_bank_2, 6, 10, 40)
-    sprites.insert(0, brick6)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick6)  # insert at the top of sprite list
 
     brick7 = stage.Sprite(image_bank_2, 5, -6, 40)
-    sprites.insert(0, brick7)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick7)  # insert at the top of sprite list
 
     brick8 = stage.Sprite(image_bank_2, 6, 106, 40)
-    sprites.insert(0, brick8)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick8)  # insert at the top of sprite list
 
     brick9 = stage.Sprite(image_bank_2, 5, 122, 40)
-    sprites.insert(0, brick9)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick9)  # insert at the top of sprite list
 
     brick10 = stage.Sprite(image_bank_2, 6, 138, 40)
-    sprites.insert(0, brick10)  # insert at the top of sprite list
+    all_the_bricks.insert(0, brick10)  # insert at the top of sprite list
 
     # create a stage for the background to show up
     # setting the frame rate to 60fps
     game = stage.Stage(ugame.display, 60)
     # setting the layers to show them in order
-    game.layers = text + sprites + [background]
+    game.layers = text + sprites + all_the_bricks + [background]
     # rendering the background and the locations of the sprites
     game.render_block()
 
     # repeat forever game loop
     while True:
+        #move the ball
+        ball.move(ball.x + constants.BALL_SPEED, ball.y + constants.BALL_SPEED)
+
+        #check if touching top or bottom of the screen
+        if not 0 < ball.x < 150:
+            constants.BALL_SPEED= -constants.BALL_SPEED
+        if not 0 < ball.y < 118:
+            constants.BALL_SPEED = -constants.BALL_SPEED
+            #check if touching a paddle1
+            for ball in sprites :
+                if ball.x > 0:
+                    pass
+
+        # Each frame check if the ball is touching any of the bricks
+        for brick_number in range(len(all_the_bricks)):
+            if all_the_bricks[brick_number].x > 0:
+                # the first 4 numbers are the coordinates of A box
+                # the second 4 numbers are the alien, it is more of a box so I just made it slightly smaller
+                if stage.collide(ball.x, ball.y,
+                                 ball.x + 16, ball.y + 16,
+                                 all_the_bricks[brick_number].x, all_the_bricks[brick_number].y,
+                                 all_the_bricks[brick_number].x + 16, all_the_bricks[brick_number].y + 16):
+                    # you hit a brick
+                    all_the_bricks[brick_number].move(constants.OFF_SCREEN_X, constants.OFF_SCREEN_Y)
+                    # bounce ball
+
+        # redraw sprite list
+        game.render_sprites(sprites)
+        game.tick() # wait until refresh rate finishes
+
         # get user input
         keys = ugame.buttons.get_pressed()
         #print(keys)
